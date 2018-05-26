@@ -924,7 +924,7 @@ void FarmServer::sendReclaResult(const TcpConnectionPtr& conn, QDataStream& in, 
         {
             LOG_INFO << "用户" << clientInfor.id << "开垦土地" << number << "成功";
             int money = query.value(0).toInt() - number;
-            query.exec(QString("update soil set money = %1 where id = %2").arg(money).arg(clientInfor.id));
+            query.exec(QString("update user set money = %1 where id = %2").arg(money).arg(clientInfor.id));
             query.exec(QString("update soil set is_recla = 1 where id = %1 and number = %2").arg(clientInfor.id).arg(number+1));
             out << 2 << money;
             out.device()->seek(0);
