@@ -240,11 +240,19 @@ void FarmServer::checkSign(const TcpConnectionPtr& conn, QDataStream& in, Client
         for(int i=1; i<=18; i++)
         {
             if(i <= 3)
-                query.exec(QString("insert into soil(id, number, level, is_recla) values(%1, %2, 0, 1)").arg(clientInfor.id).arg(i));
+                query.exec(QString("insert into soil(id, number, level, is_recla) values(%1, %2, 1, 1)").arg(clientInfor.id).arg(i));
             else
-                query.exec(QString("insert into soil(id, number, level, is_recla) values(%1, %2, 0, 0)").arg(clientInfor.id).arg(i));
+                query.exec(QString("insert into soil(id, number, level, is_recla) values(%1, %2, 1, 0)").arg(clientInfor.id).arg(i));
         }
-        out << 0 << clientInfor.id;
+        query.prepare("select * from user where username=? and password=?");
+        query.addBindValue(username);
+        query.addBindValue(password);
+        query.exec();
+        query.next();
+        clientInfor.id = query.value(0).toInt();
+        clientInfor.password = password;
+        out << 0 << clientInfor.id << query.value(3).toString() << query.value(4).toInt()
+            << query.value(5).toInt() << query.value(6).toInt();
         LOG_INFO << "新用户以用户名：\"" << username.toStdString() << "\"，密码：\"" << password.toStdString() << "\"注册成功";
     }
     else
